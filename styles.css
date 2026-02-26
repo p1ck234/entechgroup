@@ -438,10 +438,22 @@ section:nth-of-type(even) {
 }
 
 .contact-form {
+  position: relative;
   background: #ffffff;
   padding: 18px 18px 20px;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
+}
+
+/* Honeypot — скрытое поле для защиты от ботов */
+.contact-form .hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .contact-form label {
@@ -466,6 +478,31 @@ section:nth-of-type(even) {
   min-height: 90px;
 }
 
+.form-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 10px 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.form-checkbox input {
+  margin: 2px 0 0;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.form-checkbox a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.form-checkbox a:hover {
+  text-decoration: none;
+}
+
 .form-status {
   font-size: 12px;
   margin-top: 6px;
@@ -477,6 +514,70 @@ section:nth-of-type(even) {
 
 .form-status.error {
   color: #b32726;
+}
+
+/* Cookie banner */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: #2b120c;
+  color: #f8e9dd;
+  font-size: 13px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.cookie-banner--hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cookie-banner__text {
+  margin: 0;
+  max-width: 720px;
+  line-height: 1.5;
+}
+
+.cookie-banner__text a {
+  color: #ffd4a0;
+  text-decoration: underline;
+}
+
+.cookie-banner__text a:hover {
+  text-decoration: none;
+}
+
+.cookie-banner__btn {
+  flex-shrink: 0;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ff7a3b, #e43724);
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cookie-banner__btn:hover {
+  filter: brightness(1.05);
+}
+
+@media (max-width: 640px) {
+  .cookie-banner {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
 }
 
 footer {

@@ -351,18 +351,24 @@
             </div>
           </div>
           <form class="contact-form" method="post" action="send.php">
+            <!-- Скрытое поле против ботов: не заполнять -->
+            <div class="hp" aria-hidden="true">
+              <label for="company">Компания</label>
+              <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+            </div>
             <h3 style="margin-bottom:10px;">Оставить заявку</h3>
             <label for="name">Имя *</label>
-            <input id="name" name="name" type="text" placeholder="Как к вам обращаться" required />
+            <input id="name" name="name" type="text" placeholder="Как к вам обращаться" required maxlength="100" />
             <label for="phone">Телефон *</label>
             <input id="phone" name="phone" type="tel" placeholder="+7 (___) ___‑__‑__" required />
             <label for="msg">Кратко о задаче</label>
-            <textarea id="msg" name="msg" placeholder="Опишите объект или требуемые работы"></textarea>
+            <textarea id="msg" name="msg" placeholder="Опишите объект или требуемые работы" maxlength="2000"></textarea>
+            <label class="form-checkbox">
+              <input type="checkbox" name="offer" id="offer" required />
+              <span>Я согласен с <a href="offer.html" target="_blank" rel="noopener">офертой</a> и обработкой персональных данных</span>
+            </label>
             <button type="submit" class="btn-primary" style="width:100%; margin-top:4px;">Отправить</button>
             <p id="form-status" class="form-status"></p>
-            <p style="font-size:11px; color:#666; margin-top:4px;">
-              Нажимая кнопку, вы соглашаетесь на обработку персональных данных.
-            </p>
           </form>
         </div>
       </div>
@@ -375,6 +381,14 @@
       <div>ИНН 6454117650 · entech.group</div>
     </div>
   </footer>
+
+  <div id="cookie-banner" class="cookie-banner" role="alert">
+    <p class="cookie-banner__text">
+      Мы используем файлы cookie и аналогичные технологии для улучшения работы сайта и анализа посещаемости. Продолжая использовать сайт, вы соглашаетесь с нашей <a href="offer.html#cookie" target="_blank" rel="noopener">политикой использования cookie</a>.
+    </p>
+    <button type="button" class="cookie-banner__btn" aria-label="Принять">Принято</button>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const form = document.querySelector('.contact-form');
@@ -394,14 +408,18 @@
           method: 'POST',
           body: formData
         })
-          .then(function (response) { return response.text(); })
-          .then(function (text) {
-            if (text.trim() === 'ok') {
+          .then(function (response) {
+            return response.text().then(function (text) {
+              return { ok: response.ok, text: text };
+            });
+          })
+          .then(function (data) {
+            if (data.text.trim() === 'ok') {
               statusEl.textContent = 'Заявка отправлена. Мы свяжемся с вами в ближайшее время.';
               statusEl.classList.add('success');
               form.reset();
             } else {
-              statusEl.textContent = 'Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь по телефону.';
+              statusEl.textContent = data.text && data.text.length < 150 ? data.text : 'Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь по телефону.';
               statusEl.classList.add('error');
             }
           })
@@ -410,6 +428,19 @@
             statusEl.classList.add('error');
           });
       });
+
+      // Cookie banner
+      var banner = document.getElementById('cookie-banner');
+      if (banner && localStorage.getItem('entech_cookies') === 'accepted') {
+        banner.classList.add('cookie-banner--hidden');
+      }
+      var cookieBtn = document.querySelector('.cookie-banner__btn');
+      if (cookieBtn && banner) {
+        cookieBtn.addEventListener('click', function () {
+          localStorage.setItem('entech_cookies', 'accepted');
+          banner.classList.add('cookie-banner--hidden');
+        });
+      }
     });
   </script>
 </body>
