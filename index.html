@@ -350,8 +350,8 @@
               <img src="img/adress.png" alt="Карта проезда" />
             </div>
           </div>
+          <!-- Обратная связь временно скрыта
           <form class="contact-form" method="post" action="send.php">
-            <!-- Скрытое поле против ботов: не заполнять -->
             <div class="hp" aria-hidden="true">
               <label for="company">Компания</label>
               <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
@@ -370,6 +370,7 @@
             <button type="submit" class="btn-primary" style="width:100%; margin-top:4px;">Отправить</button>
             <p id="form-status" class="form-status"></p>
           </form>
+          -->
         </div>
       </div>
     </section>
@@ -391,43 +392,43 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const form = document.querySelector('.contact-form');
-      const statusEl = document.getElementById('form-status');
+      var form = document.querySelector('.contact-form');
+      var statusEl = document.getElementById('form-status');
 
-      if (!form || !statusEl) return;
+      if (form && statusEl) {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
 
-      form.addEventListener('submit', function (event) {
-        event.preventDefault();
+          statusEl.textContent = 'Отправляем заявку...';
+          statusEl.classList.remove('success', 'error');
 
-        statusEl.textContent = 'Отправляем заявку...';
-        statusEl.classList.remove('success', 'error');
+          var formData = new FormData(form);
 
-        const formData = new FormData(form);
-
-        fetch(form.action || 'send.php', {
-          method: 'POST',
-          body: formData
-        })
-          .then(function (response) {
-            return response.text().then(function (text) {
-              return { ok: response.ok, text: text };
-            });
+          fetch(form.action || 'send.php', {
+            method: 'POST',
+            body: formData
           })
-          .then(function (data) {
-            if (data.text.trim() === 'ok') {
-              statusEl.textContent = 'Заявка отправлена. Мы свяжемся с вами в ближайшее время.';
-              statusEl.classList.add('success');
-              form.reset();
-            } else {
-              statusEl.textContent = data.text && data.text.length < 150 ? data.text : 'Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь по телефону.';
+            .then(function (response) {
+              return response.text().then(function (text) {
+                return { ok: response.ok, text: text };
+              });
+            })
+            .then(function (data) {
+              if (data.text.trim() === 'ok') {
+                statusEl.textContent = 'Заявка отправлена. Мы свяжемся с вами в ближайшее время.';
+                statusEl.classList.add('success');
+                form.reset();
+              } else {
+                statusEl.textContent = data.text && data.text.length < 150 ? data.text : 'Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь по телефону.';
+                statusEl.classList.add('error');
+              }
+            })
+            .catch(function () {
+              statusEl.textContent = 'Ошибка отправки. Проверьте соединение или попробуйте позже.';
               statusEl.classList.add('error');
-            }
-          })
-          .catch(function () {
-            statusEl.textContent = 'Ошибка отправки. Проверьте соединение или попробуйте позже.';
-            statusEl.classList.add('error');
-          });
-      });
+            });
+        });
+      }
 
       // Cookie banner
       var banner = document.getElementById('cookie-banner');
